@@ -8,23 +8,25 @@ export async function GET(request: NextRequest) {
 	const page = Number(request.nextUrl.searchParams.get('page') ?? 1);
 	const rawTag = request.nextUrl.searchParams.get('tag') ?? '';
 	const tag = rawTag === 'All' ? '' : rawTag;
-	console.log('1122222');
 
-	const { data } = await api('/notes', {
-		params: {
-			...(search !== '' && { search }),
-			page,
-			perPage: 12,
-			...(tag && { tag }),
-		},
-		headers: {
-			Cookie: cookieStore.toString(),
-		},
-	});
-	if (data) {
-		return NextResponse.json(data);
+	try {
+		const { data } = await api('/notes', {
+			params: {
+				...(search !== '' && { search }),
+				page,
+				perPage: 12,
+				...(tag && { tag }),
+			},
+			headers: {
+				Cookie: cookieStore.toString(),
+			},
+		});
+		if (data) {
+			return NextResponse.json(data);
+		}
+	} catch {
+		return NextResponse.json({ error: 'Failed to fetch notes' }, { status: 500 });
 	}
-
 	return NextResponse.json({ error: 'Failed to fetch notes' }, { status: 500 });
 }
 

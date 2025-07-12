@@ -9,11 +9,10 @@ type NotePreviewModalProps = {
 const NotePreview = async ({ params }: NotePreviewModalProps) => {
 	const { id } = await params;
 	const queryClient = new QueryClient();
-	const parsedId = Number(id);
 
 	await queryClient.prefetchQuery({
-		queryKey: ['note', parsedId],
-		queryFn: () => fetchNoteById(parsedId),
+		queryKey: ['note', id],
+		queryFn: () => fetchNoteById(id),
 	});
 
 	return (

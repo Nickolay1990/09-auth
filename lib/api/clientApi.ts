@@ -1,6 +1,6 @@
 import { Note } from '@/types/note';
 import { nextServer } from './api';
-import { SignRequest } from '@/types/services';
+import { CheckSessionResponse, SignRequest } from '@/types/services';
 import { User } from '@/types/user';
 
 interface NotesResponse {
@@ -21,8 +21,9 @@ export interface CreateNoteValues {
 	tag: 'Work' | 'Personal' | 'Meeting' | 'Shopping' | 'Todo';
 }
 
-type CheckSessionRequest = {
-	success: boolean;
+export type EditUserRequest = {
+	email: string;
+	username: string;
 };
 
 export async function fetchNotes(search: string, page: number, tag?: string): Promise<NotesResponse> {
@@ -54,7 +55,7 @@ export async function deleteNote(id: number): Promise<Note> {
 	return res.data;
 }
 
-export async function fetchNoteById(id: number): Promise<Note> {
+export async function fetchNoteById(id: string): Promise<Note> {
 	const res = await nextServer.get<Note>(`/notes/${id}`);
 	return res.data;
 }
@@ -70,11 +71,21 @@ export async function signIn(data: SignRequest) {
 }
 
 export const checkSession = async () => {
-	const res = await nextServer.get<CheckSessionRequest>('/auth/session');
+	const res = await nextServer.get<CheckSessionResponse>('/auth/session');
 	return res.data.success;
 };
 
 export const getMe = async () => {
 	const { data } = await nextServer.get<User>('/users/me');
+	return data;
+};
+
+export const logout = async () => {
+	const { data } = await nextServer.post('/auth/logout');
+	return data;
+};
+
+export const editUser = async (userData: EditUserRequest) => {
+	const { data } = await nextServer.patch<User>('/users/me', userData);
 	return data;
 };

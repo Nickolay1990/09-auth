@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 
 const NotePreviewClient = () => {
 	const router = useRouter();
-	const id = Number(useParams<{ id: string }>().id);
+	const id = useParams<{ id: string }>().id;
 	const closeModal = () => {
 		router.back();
 	};

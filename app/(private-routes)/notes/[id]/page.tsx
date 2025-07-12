@@ -9,8 +9,7 @@ type NoteDetailsProps = {
 
 export async function generateMetadata({ params }: NoteDetailsProps): Promise<Metadata> {
 	const { id } = await params;
-	const parsedId = Number(id);
-	const note = await fetchNoteById(parsedId);
+	const note = await fetchNoteById(id);
 
 	return {
 		title: note.title,
@@ -35,11 +34,10 @@ async function NoteDetails({ params }: NoteDetailsProps) {
 	const queryClient = new QueryClient();
 
 	const { id } = await params;
-	const parsedId = Number(id);
 
 	await queryClient.prefetchQuery({
-		queryKey: ['note', parsedId],
-		queryFn: () => fetchNoteById(parsedId),
+		queryKey: ['note', id],
+		queryFn: () => fetchNoteById(id),
 	});
 
 	return (

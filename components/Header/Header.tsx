@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import css from './Header.module.css';
 import TagsMenu from '../TagsMenu/TagsMenu';
@@ -17,7 +15,6 @@ function Header() {
 						<Link href="/">Home</Link>
 					</li>
 					<li>
-						{' '}
 						<TagsMenu />
 					</li>
 					<AuthNavigation />

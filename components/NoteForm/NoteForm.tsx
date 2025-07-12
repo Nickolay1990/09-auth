@@ -1,7 +1,7 @@
 'use client';
 import css from './NoteForm.module.css';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createNote } from '@/lib/api';
+import { createNote } from '@/lib/api/clientApi';
 import ErrorMessageText from '../ErrorMessage/ErrorMessage';
 import { useRouter } from 'next/navigation';
 import * as Yup from 'yup';
@@ -72,7 +72,6 @@ export default function NoteForm() {
 			return;
 		}
 
-		setValidationError(null);
 		mutation.mutate(data);
 	}
 

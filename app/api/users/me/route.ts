@@ -6,7 +6,6 @@ import { cookies } from 'next/headers';
 
 export async function GET() {
 	const cookieStore = await cookies();
-	console.log('1111111111111111');
 
 	try {
 		const { data } = await api.get('/users/me', {
@@ -16,7 +15,7 @@ export async function GET() {
 		});
 
 		if (data) return NextResponse.json(data);
-	} catch (error) {
+	} catch {
 		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 	}
 }
