@@ -22,7 +22,6 @@ export interface CreateNoteValues {
 }
 
 export type EditUserRequest = {
-	email: string;
 	username: string;
 };
 
@@ -50,7 +49,7 @@ export async function createNote({ title, content, tag }: CreateNoteValues): Pro
 	return res.data;
 }
 
-export async function deleteNote(id: number): Promise<Note> {
+export async function deleteNote(id: string): Promise<Note> {
 	const res = await nextServer.delete<Note>(`/notes/${id}`);
 	return res.data;
 }
@@ -62,12 +61,12 @@ export async function fetchNoteById(id: string): Promise<Note> {
 
 export async function signUp(data: SignRequest) {
 	const res = await nextServer.post<User>('/auth/register', data);
-	return res;
+	return res.data;
 }
 
 export async function signIn(data: SignRequest) {
 	const res = await nextServer.post<User>('/auth/login', data);
-	return res;
+	return res.data;
 }
 
 export const checkSession = async () => {

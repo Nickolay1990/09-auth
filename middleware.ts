@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
-import { checkServerSession } from './lib/api/serverApi';
+import { checkSession } from './lib/api/serverApi';
 import { parse } from 'cookie';
 
 const privateRoutes = ['/profile', '/notes'];
@@ -17,7 +17,7 @@ export async function middleware(request: NextRequest) {
 	if (isPrivate) {
 		if (!accessToken) {
 			if (refreshToken) {
-				const apiRes = await checkServerSession();
+				const apiRes = await checkSession();
 				const setCookie = apiRes.headers['set-cookie'];
 
 				if (setCookie) {
@@ -25,11 +25,19 @@ export async function middleware(request: NextRequest) {
 
 					for (const cookieStr of cookieArray) {
 						const parsed = parse(cookieStr);
-						const options = {
-							expires: parsed.Expires ? new Date(parsed.Expires) : undefined,
-							path: parsed.Path,
-							maxAge: Number(parsed['Max-Age']),
-						};
+						const options: { expires?: Date; path?: string; maxAge?: number } = {};
+						if (parsed.Expires) {
+							options.expires = new Date(parsed.Expires);
+						}
+
+						if (parsed.Path) {
+							options.path = parsed.Path;
+						}
+
+						const maxAge = Number(parsed['Max-Age']);
+						if (!isNaN(maxAge)) {
+							options.maxAge = maxAge;
+						}
 						if (parsed.accessToken) cookieStore.set('accessToken', parsed.accessToken, options);
 						if (parsed.refreshToken) cookieStore.set('refreshToken', parsed.refreshToken, options);
 					}
@@ -42,27 +50,37 @@ export async function middleware(request: NextRequest) {
 			}
 			return NextResponse.redirect(new URL('/sign-in', request.url));
 		}
+		return NextResponse.next();
 	}
 
 	if (isPublic) {
 		if (!accessToken) {
 			if (refreshToken) {
-				const apiRes = await checkServerSession();
+				const apiRes = await checkSession();
 				const setCookie = apiRes.headers['set-cookie'];
 
 				if (setCookie) {
 					const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
 					for (const cookieStr of cookieArray) {
 						const parsed = parse(cookieStr);
-						const options = {
-							expires: parsed.Expires ? new Date(parsed.Expires) : undefined,
-							path: parsed.Path,
-							maxAge: Number(parsed['Max-Age']),
-						};
+						const options: { expires?: Date; path?: string; maxAge?: number } = {};
+						if (parsed.Expires) {
+							options.expires = new Date(parsed.Expires);
+						}
+
+						if (parsed.Path) {
+							options.path = parsed.Path;
+						}
+
+						const maxAge = Number(parsed['Max-Age']);
+						if (!isNaN(maxAge)) {
+							options.maxAge = maxAge;
+						}
+
 						if (parsed.accessToken) cookieStore.set('accessToken', parsed.accessToken, options);
 						if (parsed.refreshToken) cookieStore.set('refreshToken', parsed.refreshToken, options);
 					}
-					return NextResponse.redirect(new URL('/profile', request.url), {
+					return NextResponse.redirect(new URL('/', request.url), {
 						headers: {
 							Cookie: cookieStore.toString(),
 						},
@@ -71,7 +89,7 @@ export async function middleware(request: NextRequest) {
 			}
 			return NextResponse.next();
 		}
-		return NextResponse.redirect(new URL('/profile', request.url));
+		return NextResponse.redirect(new URL('/', request.url));
 	}
 
 	return NextResponse.next();

@@ -29,7 +29,7 @@ export default function NoteList({ notes }: NoteListProps) {
 
 	const { isError } = mutation;
 
-	const handleDelete = (id: number) => {
+	const handleDelete = (id: string) => {
 		setDeletingNoteId(id);
 		mutation.mutate(id);
 	};

@@ -1,9 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import css from './EditProfilePage.module.css';
 import { editUser } from '@/lib/api/clientApi';
-import { User } from '@/types/user';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/store/authStore';
@@ -14,22 +12,23 @@ type FormType = {
 
 const ProfileEditPage = () => {
 	const me = useAuthStore(state => state.user);
-	const [user, setUser] = useState<User | null>(me);
+	const setMe = useAuthStore(state => state.setUser);
+
 	const router = useRouter();
 
 	const handleEditName = async (formData: FormData) => {
 		const data = Object.fromEntries(formData) as FormType;
 
-		if (!data.username.trim() || !user) {
+		if (!data.username.trim()) {
 			return;
 		}
 
 		try {
 			const response = await editUser({
-				email: user?.email,
 				username: data.username,
 			});
-			setUser(response);
+			setMe(response);
+
 			router.push('/profile');
 		} catch (error) {
 			throw error;
@@ -45,15 +44,15 @@ const ProfileEditPage = () => {
 			<div className={css.profileCard}>
 				<h1 className={css.formTitle}>Edit Profile</h1>
 
-				<Image src={user?.avatar || '/7236095.png'} alt="User Avatar" width={120} height={120} className={css.avatar} />
+				<Image src={me?.avatar || '/7236095.png'} alt="User Avatar" width={120} height={120} className={css.avatar} />
 
 				<form className={css.profileInfo} action={handleEditName}>
 					<div className={css.usernameWrapper}>
 						<label htmlFor="username">Username:</label>
-						<input name="username" id="username" type="text" className={css.input} defaultValue={user?.username} />
+						<input name="username" id="username" type="text" className={css.input} defaultValue={me?.username} />
 					</div>
 
-					<p>Email: {user?.email}</p>
+					<p>Email: {me?.email}</p>
 
 					<div className={css.actions}>
 						<button type="submit" className={css.saveButton}>

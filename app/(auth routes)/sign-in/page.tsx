@@ -64,7 +64,7 @@ const SignIn = () => {
 
 			const res = await signIn(data);
 			if (res) {
-				setUser(res.data);
+				setUser(res);
 				router.push('/profile');
 			} else {
 				setError('Invalid data');
